@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "forum",
     "short_name": "forum",
+=======
+    "name": "forumm",
+    "short_name": "forumm",
+>>>>>>> master
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
