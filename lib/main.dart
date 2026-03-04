@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Forum',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(backgroundColor: Colors.indigo),
       ),
