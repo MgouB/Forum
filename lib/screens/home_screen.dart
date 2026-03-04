@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:forum/api/message_api.dart';
-import 'package:forum/model/message_model.dart';
+import 'package:forum/api/forum_api.dart';
+import 'package:forum/model/forum_model.dart';
+import 'package:forum/sujet_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,72 +11,82 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Future contenant la liste des messages chargés depuis l’API
-  late Future<List<MessageModel>> futureMessages;
+  late Future<List<ForumModel>> futureForums;
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-    futureMessages = MessageApi().fetchMessages();
+    futureForums = ForumApi().fetchForums();
+    _checkLoginStatus();
   }
 
-  void btAbout() {
-    Navigator.pushNamed(context, '/register');
-  }
-  void btLogin() {
-    Navigator.pushNamed(context, '/login');
+  void _checkLoginStatus() {
+    setState(() {
+      // Logique à adapter plus tard avec ton système de token
+      isConnected = false;
+    });
   }
 
+  void btAbout() => Navigator.pushNamed(context, '/register');
+  void btLogin() async{
+    final result = await Navigator.pushNamed(context, '/login');
+    if (result == true){
+      setState(() {
+        isConnected = true;
+      });
+    }
+  } 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Forum',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: btAbout,
-            child: const Text(
-              "S'inscrire",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          TextButton(
-            onPressed: btLogin,
-            child: const Text(
-              "Se Connecter",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-        elevation: 10.0,
+        title: const Text('Flutter', style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        elevation: 10.0,
+        actions: <Widget>[
+          //"..." permet d'insérer une liste de widgets si la condition est vraie
+          if (!isConnected) ...[
+            TextButton(
+              onPressed: btAbout,
+              child: const Text(
+                "S'inscrire",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            TextButton(
+              onPressed: btLogin,
+              child: const Text(
+                "Se Connecter",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ] else
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: () => setState(() => isConnected = false),
+            ),
+        ],
       ),
-
-      // Le corps de la page affiche maintenant la liste des messages
-      body: FutureBuilder<List<MessageModel>>(
-        future: futureMessages,
+      body: FutureBuilder<List<ForumModel>>(
+        future: futureForums,
         builder: (context, snapshot) {
-          // 1. Chargement
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          // 2. Erreur
           if (snapshot.hasError) {
             return Center(child: Text('Erreur : ${snapshot.error}'));
           }
-          // 3. Pas de données
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Aucun message trouvé.'));
+            return const Center(child: Text('Aucun forum trouvé.'));
           }
-          // 4. On affiche la liste si tout est OK
-          final messages = snapshot.data!;
+
+          final forums = snapshot.data!;
+
           return ListView.builder(
-            itemCount: messages.length,
+            itemCount: forums.length,
             itemBuilder: (context, index) {
-              final m = messages[index];
+              final f = forums[index];
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 color: Colors.white,
@@ -83,49 +94,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Date formatée
-                      Text(
-                        "${m.postedAt.day.toString().padLeft(2, '0')}/"
-                        "${m.postedAt.month.toString().padLeft(2, '0')}/"
-                        "${m.postedAt.year} à "
-                        "${m.postedAt.hour.toString().padLeft(2, '0')}:"
-                        "${m.postedAt.minute.toString().padLeft(2, '0')}",
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 6),
-                      // Titre du message (le sujet)
-                      Text(
-                        m.title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      // Aperçu du contenu
-                      Text(
-                        m.content,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[800]),
-                      ),
-                      const SizedBox(height: 10),
-                      // Auteur
-                      Text(
-                        "${m.userFirstName} ${m.userLastName}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                child: ListTile(
+                  leading: const Icon(Icons.forum, color: Colors.blue),
+                  title: Text(
+                    f.libelle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  subtitle: Text(f.description),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SujetScreen(forumId: f.id, forumLibelle: f.libelle),
+                      ),
+                    );
+                  },
                 ),
               );
             },

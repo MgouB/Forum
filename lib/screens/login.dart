@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forum/api/user.dart'; 
-import 'package:forum/utils/secure_storage.dart'; // Pour le stockage des identifiants
+import 'package:forum/utils/secure_storage.dart'; 
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -67,8 +67,10 @@ class _LoginState extends State<Login> {
         );
 
         // Redirection après un court délai
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.pushReplacementNamed(context, '/');
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted){
+             Navigator.pop(context, true);
+          }
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
