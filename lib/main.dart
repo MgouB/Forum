@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:forum/screens/home_screen.dart';
+import 'package:forum/screens/login.dart';
 import 'package:forum/screens/register.dart';
 Future<void> main() async {
 await dotenv.load(fileName: "assets/.env.local");
@@ -21,6 +22,7 @@ class MainApp extends StatelessWidget {
       routes: {
       '/': (context) => const HomeScreen(),
       '/register':(context) => const Register(),
+      '/login': (context) => const Login(),
       },
     );
   }

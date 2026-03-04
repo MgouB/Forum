@@ -15,6 +15,9 @@ class _HomeScreen extends State<HomeScreen> {
       '/register',
     );
   }
+  void btLogin(){
+    Navigator.pushNamed(context, '/login',);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,13 @@ class _HomeScreen extends State<HomeScreen> {
             onPressed: btAbout,
             child: const Text(
               "S'inscrire",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          TextButton(
+            onPressed: btLogin,
+            child: const Text(
+              "Se Connecter",
               style: TextStyle(color: Colors.white),
             ),
           ),

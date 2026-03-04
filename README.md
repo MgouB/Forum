@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # forum
-=======
-# forumm
->>>>>>> master
 
 A new Flutter project.
 

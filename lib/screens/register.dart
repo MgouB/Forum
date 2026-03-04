@@ -278,7 +278,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text('Soumettre'),
+              child: const Text("S'inscrire"),
             ),
           ],
         ),
